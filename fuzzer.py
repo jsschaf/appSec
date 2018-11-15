@@ -68,7 +68,7 @@ def seg_object():
         }
         attempt = json.dumps(tmp)
 
-        print attempt
+#        print attempt
         return attempt
         
 def seg_bool():
@@ -95,12 +95,12 @@ def test(attempt):
                 sys.exit(0)
 
 while found==False:
-#        test(seg_int())
-#        test(seg_string())
-#        test(seg_array())
+        test(seg_int())
+        test(seg_string())
+        test(seg_array())
         test(seg_object())
-#        test(seg_null())
-#        test(seg_bool())
+        test(seg_null())
+        test(seg_bool())
         size += 1
         
                 
