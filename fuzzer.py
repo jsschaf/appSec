@@ -1,45 +1,62 @@
-from subprocess import Popen, PIPE
+#!/usr/bin/python
+import random
 import string
 import base64
 import sys
-import random
-library = string.digits + string.letters;
-library += '''_[]{}/\()-+=$%#,.'''
-dic = {}
+import json
+import subprocess
+import os
 
 
-def create_string(s):
+found = False
+size = 1
+pchar = string.ascii_letters + string.digits
+p_bool = ['true', 'false']
+letters = string.ascii_letters
+nums = string.digits
+
+def seg_int():
+    key = ''.join(random.choice(letters))
+    value = ''.join((random.choice(nums) for i in range (random.randint(0, size))))
+    attempt = "{\"" + key + "\":" + value * size+ "}"
+#    print attempt
+    return attempt
+
+def seg_string():
+    key = ''.join(random.choice(letters))
+    value = ''.join((random.choice(pchar) for i in range (random.randint(0, size))))
+    attempt = '{\"' + key + '\":\"' + value * size + '\"}'
+#    print attempt
+    return attempt
+
+def seg_double():
+    key = ''.join(random.choice(letters))
+    value = ''.join((random.choice(nums) for i in range (random.randint(0, size))))
+    attempt = "{\"" + key + "\":" + value * size + "}"
+#    print attempt
+    return attempt
+
+def seg_bool():
+    # Flipping a coin 5 times would give you a 96% confidence interval you would get one of either heads or tails
+    key = ''.join(random.choice(letters))
+    value = ''.join((random.choice(p_bool) for i in range(random.randint(1, 5))))
+    attempt = "{\"" + key + "\":" + value * size + "}"
+#    print attempt
+    return attempt
+
+def test(attempt):
+    child = subprocess.Popen("./jsonParser", stdin=subprocess.PIPE, stderr=subprocess.PIPE)
+    _, stdErrOut = child.communicate(input = attempt)
+    if child.returncode == -11:
+        found = True
+        print base64.b64encode(attempt)
+    	sys.exit(0)
+
+while found==False:
+    test(seg_int())
+#    test(seg_string())
+#    test(seg_double())
+    test(seg_bool())
+    size += 1
     
-    s += '''{"'''
-    x = random.randint(1,10)
-    while (x > 0):
-        s += (random.choice(library))
-        x = x - 1
-    s += ('''":"''')
-    y = random.randint(1,10)
-    while(y>0):
-        s += (random.choice(library))
-        y -= 1;
-    s += '''}'''
-    return s;
-
-def test(s):
-    p = Popen('./jsonParser', stdin=PIPE, stdout=PIPE, stderr=PIPE)
-    _, err = p.communicate(input = s)
-    
-    if p.returncode == -11: #or err == "" 
-        print  "found input that causes seg fault!"
-        print s
-        print base64.b64encode(s)
-        sys.exit(0)
-
-victim = "{}"
-victim += '''{a}'''
-victim += '''{"a":1E-4}'''
-
-while(1):
-    test(victim)
-    victim = create_string(victim)
-    test(victim)
-
-
+	
